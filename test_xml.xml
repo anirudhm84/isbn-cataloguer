@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ISBNdb server_time="2013-02-09T11:51:35Z">
+<BookList total_results="1" page_size="10" page_number="1" shown_results="1">
+<BookData book_id="prime_obsession" isbn="0309085497" isbn13="9780309085496">
+<Title>Prime obsession</Title>
+<TitleLong>Prime obsession: Bernhard Riemann and the greatest unsolved problem in mathematics</TitleLong>
+<AuthorsText>John Derbyshire</AuthorsText>
+<PublisherText publisher_id="joseph_henry_press">Washington, D.C. : Joseph Henry Press, c2003.</PublisherText>
+</BookData>
+</BookList>
+</ISBNdb>
