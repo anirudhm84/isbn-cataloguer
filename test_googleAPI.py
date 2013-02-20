@@ -10,9 +10,19 @@ import urllib2
 import json
 import time
 
-googleAPIKey='AIzaSyDdbvoEQFRJcB6fo1s5yHto7W31NboTGlg'
+#googleAPIKey='AIzaSyDdbvoEQFRJcB6fo1s5yHto7W31NboTGlg'
 
-def getGoogleResult(ISBN='9780309085496', printCheck=0):
+def getGoogleAPIKey(filename="googlebooks_api_key.txt"):
+    """ Get the google books api key from filename (default=googlebooks_api_key.txt) file """
+    try:
+        inpf = open(filename, "r")
+    except IOError:
+        print("Unable to open %s to obtain the google books api key" %filename)
+    api_key = (inpf.readline()).strip('\n')
+    return api_key
+  
+
+def getGoogleResult(ISBN, googleAPIKey, printCheck=0):
     bookUrl = "https://www.googleapis.com/books/v1/volumes?q=isbn:"+ISBN+\
             "&key="+googleAPIKey
     try :
@@ -86,7 +96,7 @@ def getVolumeInfo(bookJson, ISBN):
             print "Unable to find key 'subtitle'"
             
         try:
-            bookInfoDict['authors']=';'.join(volumeInfo['authors'])
+            bookInfoDict['authors']=' & '.join(volumeInfo['authors'])
         except KeyError:
             bookInfoDict['authors']=""
             print "Unable to find key 'authors'"
@@ -127,8 +137,8 @@ def getVolumeInfo(bookJson, ISBN):
     return bookInfoDict
              
     
-def getInfoFromISBN(isbn='9780309085496', printCheck=0):
-    bookJson = json.loads(getGoogleResult(isbn, printCheck))
+def getInfoFromISBN(isbn, googleAPIKey, printCheck=0):
+    bookJson = json.loads(getGoogleResult(isbn, googleAPIKey, printCheck))
     if printCheck:
         print bookJson
     return getVolumeInfo(bookJson, isbn)
@@ -165,12 +175,16 @@ def createEmptyFile(filename):
     f.close()
 
 if __name__=="__main__" :
-    
-    print getInfoFromISBN('9788131708415', 1)    
-    exit()    
-    filename = "temp_output.csv"
+     
+    googleAPIKey = getGoogleAPIKey()
+    #print googleAPIKey
+    #print type(googleAPIKey)
+    #print getInfoFromISBN('9788131708415', googleAPIKey, 1)    
+    #exit()    
+    out_filename = "temp_output.csv"
     fileMode = 'a'
-    createEmptyFile(filename)
+    createEmptyFile(out_filename)
+    failCount, successCount = (0, 0)
     try:
         inp = open('my_bookList.csv', 'r')
     except IOError:
@@ -179,10 +193,15 @@ if __name__=="__main__" :
     for line in inp.readlines():
         lineList = lineToList(line)
         print lineList
-        bookDict = getInfoFromISBN(lineList[0])
+        bookDict = getInfoFromISBN(lineList[0], googleAPIKey)
         if bookDict:
-            writeToFile(bookDict,filename, fileMode)
+            writeToFile(bookDict,out_filename, fileMode)
+            successCount = successCount + 1
         else:
             fileOutLine = lineList[0] + ",No Data"
+            failCount = failCount + 1
+    print "Total Count = %d, Success Count = %d, Fail Count = %d"  % (successCount + failCount, 
+                                       successCount, failCount)
+
             
     

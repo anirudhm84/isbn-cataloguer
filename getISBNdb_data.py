@@ -8,7 +8,16 @@ Created on Sat Feb 09 18:01:44 2013
 import xml.etree.ElementTree as ET
 import urllib2
 
-access_key = "ZFFYQ5I5"
+def GetAccessKey(filename="isbndb_key.txt"):
+    """ Get the access key from filename (default=isbndb_key.txt) file """
+    try:
+        inpf = open(filename, "r")
+    except IOError:
+        print("Unable to open %s to obtain the isbndb access key" %filename)
+    access_key = (inpf.readline()).strip('\n')
+    return access_key
+        
+    
 
 
 def getBookDataXML(ISBN, accessKey):
@@ -63,6 +72,7 @@ def getBookDataFromXML(elementRoot):
 
 
 if __name__=="__main__":
+    accessKey = GetAccessKey()
     root = ET.parse("test_xml.xml")
     finalDict = {}
     finalDict['DRC_Num']='D01153'
